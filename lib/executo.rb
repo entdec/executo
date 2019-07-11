@@ -1,5 +1,7 @@
-require "executo/version"
 require "executo/cli"
+require "executo/configuration"
+require "executo/version"
+require "executo/worker"
 
 module Executo
   class Error < StandardError; end
@@ -15,7 +17,7 @@ module Executo
     def publish(server_or_role, command, options = {})
       Sidekiq::Client.new(ConnectionPool.new { Redis.new(config.redis) }).push(
         'queue' => server_or_role,
-        'class' => 'RemoteCommandWorker',
+        'class' => 'Executo::Worker',
         'args' => [command, options]
       )
     end
