@@ -15,7 +15,7 @@ module Executo
 
       Executo.config.logger.debug "passed cmd: #{cmd}"
 
-      computed_cmd = if cmd.is?(Array)
+      computed_cmd = if cmd.is_a?(Array)
                        cmd.shelljoin
                      else
                        cmd.shellsplit.shelljoin
