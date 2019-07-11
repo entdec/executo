@@ -23,7 +23,7 @@ module Executo
       #   at - timestamp to schedule the job (optional), must be Numeric (e.g. Time.now.to_f)
       #   retry - whether to retry this job if it fails, default true or an integer number of retries
       #   backtrace - whether to save any error backtrace, default false
-      options = options.merge(
+      options = { 'retry' => false }.merge(options).merge(
         'queue' => server_or_role,
         'class' => 'Executo::Worker',
         'args' => [command, options]
