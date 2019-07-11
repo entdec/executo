@@ -13,7 +13,7 @@ module Executo
       raise 'stdin_content must be an Array of Strings.' \
         unless stdin_content.is_a?(Array) && stdin_content.all? { |c| c.is_a?(String) }
 
-      Executo.config.logger.debug "passed cmd: #{computed_cmd}"
+      Executo.config.logger.debug "passed cmd: #{cmd}"
 
       computed_cmd = if cmd.is?(Array)
                        cmd.shelljoin
