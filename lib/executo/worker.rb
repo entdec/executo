@@ -1,8 +1,6 @@
 module Executo
   class Worker
     include Sidekiq::Worker
-    sidekiq_options retry: true, backtrace: true
-
     def perform(command, options)
       Executo.config.logger.debug "command: #{command}"
       Executo.config.logger.debug "options: #{options}"

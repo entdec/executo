@@ -6,7 +6,7 @@ module Executo
     def initialize
       @redis = {}
       @logger = Logger.new(STDOUT)
-      @logger.level = Logger::INFO
+      @logger.level = Logger::DEBUG
     end
 
     # logger [Object].

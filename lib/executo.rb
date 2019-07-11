@@ -17,11 +17,18 @@ module Executo
     end
 
     def publish(server_or_role, command, options = {})
-      Sidekiq::Client.new(ConnectionPool.new { Redis.new(config.redis) }).push(
+      #   queue - the named queue to use, default 'default'
+      #   class - the worker class to call, required
+      #   args - an array of simple arguments to the perform method, must be JSON-serializable
+      #   at - timestamp to schedule the job (optional), must be Numeric (e.g. Time.now.to_f)
+      #   retry - whether to retry this job if it fails, default true or an integer number of retries
+      #   backtrace - whether to save any error backtrace, default false
+      options = options.merge(
         'queue' => server_or_role,
         'class' => 'Executo::Worker',
         'args' => [command, options]
       )
+      Sidekiq::Client.new(ConnectionPool.new { Redis.new(config.redis) }).push(options)
     end
   end
 end
