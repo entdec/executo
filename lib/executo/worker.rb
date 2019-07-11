@@ -4,14 +4,16 @@ module Executo
     def perform(command, options)
       Executo.config.logger.debug "command: #{command}"
       Executo.config.logger.debug "options: #{options}"
-
       Executo.config.logger.debug 'running...'
       begin
-        status = CLI.run(command, stdout: ->(line) { puts line }, stderr: ->(line) { puts "ERR: #{line}" })
-        raise 'Job ran not successful' unless status.success?
+        stdout = []
+        stderr = []
+        status = CLI.run(command, stdout: ->(line) { stdout << line }, stderr: ->(line) { stderr << line })
+
+        Executo.config.callback(command, options, status.exitstatus, status.pid, stdout, stderr)
       rescue StandardError => e
-        Executo.config.logger.info e.message
-        raise 'Job ran not successful: #{e.class} - #{e.message}'
+        Executo.config.logger.error "Job ran not successful: #{e.class} - #{e.message}"
+        raise e
       end
 
       Executo.config.logger.info "Job ran as pid #{status.pid}"
