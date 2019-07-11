@@ -14,9 +14,9 @@ module Executo
         unless stdin_content.is_a?(Array) && stdin_content.all? { |c| c.is_a?(String) }
 
       computed_cmd = [cmd].flatten.join(' ')
-      Executo.logger.debug "computed_cmd: #{computed_cmd}"
+      Executo.config.logger.debug "computed_cmd: #{computed_cmd}"
       computed_cmd = computed_cmd.split(' ').map { |p| Shellwords.escape(p) }.join(' ')
-      Executo.logger.debug "computed_cmd: #{computed_cmd}"
+      Executo.config.logger.debug "computed_cmd: #{computed_cmd}"
       Dir.chdir(in_directory || Dir.pwd) do
         Open3.popen3(computed_cmd) do |stdin_stream, stdout_stream, stderr_stream, thread|
           puts "thread: #{thread}"
