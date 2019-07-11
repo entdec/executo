@@ -1,3 +1,5 @@
+require 'sidekiq'
+
 require "executo/cli"
 require "executo/configuration"
 require "executo/version"
