@@ -24,7 +24,7 @@ module Executo
       Executo.config.logger.debug "computed cmd: #{computed_cmd}"
       Dir.chdir(in_directory || Dir.pwd) do
         Open3.popen3(computed_cmd) do |stdin_stream, stdout_stream, stderr_stream, thread|
-          puts "thread: #{thread}"
+          Executo.config.logger.debug "thread: #{thread}"
           stdin_content.each do |input_line|
             stdin_stream.write(input_line)
 
