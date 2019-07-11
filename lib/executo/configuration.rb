@@ -1,4 +1,4 @@
-module Nuntius
+module Executo
   class Configuration
     attr_accessor :redis
     attr_writer   :logger
