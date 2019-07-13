@@ -32,7 +32,7 @@ module Executo
     #        backtrace - whether to save any error backtrace, default false
     def publish(target, command, params = [], options: {}, job_options: {})
 
-      options = { 'retry' => false }.merge(job_options).merge(
+      options = { 'retry' => 0 }.merge(job_options).merge(
         'queue' => target,
         'class' => 'Executo::Worker',
         'args' => [command, params, options]
