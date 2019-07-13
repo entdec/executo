@@ -7,7 +7,7 @@ require 'uri'
 Executo.setup do |config|
   config.redis = { url: 'redis://localhost:6379/1' }
   config.callback = lambda do |state, exitstatus, stdout, stderr, context|
-    callback_url = context['options'].delete('callback_url')
+    callback_url = context&.[]('options')&.delete('callback_url')
     break unless callback_url
 
     data = {
