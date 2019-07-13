@@ -29,8 +29,8 @@ module Executo
         Executo.config.callback(
           status.success? ? :completed : :failed,
           status.exitstatus,
-          stdout.join("\r\n"),
-          stderr.join("\r\n"),
+          stdout.join,
+          stderr.join,
           'command' => command,
           'params' => params,
           'options' => options,
