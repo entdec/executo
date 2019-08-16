@@ -41,6 +41,7 @@ module Executo
             rescue IOError => e
               # ignore
             end
+          end
         end
 
         thread.join
