@@ -7,7 +7,7 @@ module Executo
     def initialize
       @redis = {}
       @logger = Logger.new(STDOUT)
-      @logger.level = Logger::DEBUG
+      @logger.level = Logger::INFO
       @callback = ->(state, exitstatus, stdout, stderr, context) {}
     end
 
