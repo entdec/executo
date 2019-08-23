@@ -12,7 +12,7 @@ module Executo
       Executo.config.logger.debug "params: #{params}"
       Executo.config.logger.debug "options: #{options}"
 
-      Executo.config.logger.debug 'Started'
+      Executo.config.logger.info 'Command started'
       Executo.config.callback(:started)
 
       begin
@@ -38,11 +38,11 @@ module Executo
         )
       rescue StandardError => e
         # This only happens if something really broke, not worth a callback?
-        Executo.config.logger.error "Failed: #{e.class} - #{e.message}"
+        Executo.config.logger.error "Command failed with exception: #{e.class} - #{e.message}"
         raise e
       end
 
-      Executo.config.logger.info "Job ran as pid #{status.pid}"
+      Executo.config.logger.info "Command finished, using pid #{status.pid}"
     end
   end
 end
