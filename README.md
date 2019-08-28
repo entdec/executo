@@ -33,6 +33,15 @@ Publish jobs using:
 Executo.publish('localhost', 'ls', ['-al'])
 ```
 
+You can publish jobs encrypted as well, which means that the command and parameters, but also passed options are encrypted before sent to the server (sidekiq/redis).
+They are only decrypted in memory for the command te be executed. Job options are never encrypted.
+This is ideal if you don't want email addresses or passwords to be littered over log files or in the redis database.
+
+Publish encrypted jobs using:
+```ruby
+Executo.publish('localhost', 'ls', ['-al'], encrypt: true)
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/executo. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
