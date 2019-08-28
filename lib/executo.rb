@@ -48,7 +48,7 @@ module Executo
     def publish(target, command, params = [], encrypt: false, options: {}, job_options: {})
 
       args = if encrypt
-               [encrypt(command), encrypt(params), encrypt(options)]
+               [encrypt(command), encrypt(params), encrypt(options.stringify_keys)]
              else
                [command, params, options]
              end
