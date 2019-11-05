@@ -23,7 +23,10 @@ module Executo
         status = CLI.run(
           [command] + params,
           stdout: ->(line) { stdout << line },
-          stderr: ->(line) { stderr << line }
+          stderr: ->(line) { stderr << line },
+          stdin_content: options['stdin_content'] || [],
+          stdin_newlines: options.key?('stdin_newlines') ? options['stdin_newlines'] : true,
+          shell_escape: options.key?('shell_escape') ? options['shell_escape'] : true
         )
 
         Executo.config.callback(

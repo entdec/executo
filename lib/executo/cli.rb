@@ -3,7 +3,7 @@ require 'shellwords'
 
 module Executo
   class CLI
-    def self.run(cmd, stdin_content: [], stdin_newlines: true, stdout:, stderr:)
+    def self.run(cmd, stdin_content: [], stdin_newlines: true, stdout:, stderr:, shell_escape: true)
       raise 'cmd must be a String or array of Strings.' \
         unless cmd.is_a?(String) || (cmd.is_a?(Array) && cmd.all? { |c| c.is_a?(String) })
       raise 'stdout must be a Proc.' unless stdout.is_a?(Proc)
@@ -16,9 +16,9 @@ module Executo
       Executo.config.logger.debug "passed cmd: #{cmd}"
 
       computed_cmd = if cmd.is_a?(Array)
-                       cmd.shelljoin
+                       (shell_escape ? cmd.shelljoin : cmd.join)
                      else
-                       cmd.shellsplit.shelljoin
+                       (shell_escape ? cmd.shellsplit.shelljoin : cmd.shellsplit.join)
                      end
 
       Executo.config.logger.debug "computed cmd: #{computed_cmd}"

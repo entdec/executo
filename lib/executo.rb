@@ -5,6 +5,7 @@ require "executo/cli"
 require "executo/configuration"
 require "executo/version"
 require "executo/encrypted_worker"
+require "executo/scheduler_worker"
 require "executo/worker"
 
 module Executo
