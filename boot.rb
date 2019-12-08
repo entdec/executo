@@ -38,4 +38,8 @@ end
 
 Sidekiq.configure_server do |config|
   config.redis = Executo.config.redis
+  # config.on(:startup) do
+  #   config.options[:queues] << 'critical'
+  #   Executo::SchedulerWorker.perform_async unless Executo::SchedulerWorker.new.scheduled?
+  # end
 end

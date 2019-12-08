@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open3'
 require 'shellwords'
 
@@ -27,20 +29,20 @@ module Executo
         stdin_content.each do |input_line|
           stdin_stream.write(input_line)
 
-          stdin_stream.write("\n") unless input_line[-1] == "\n" || !stdin_newlines
+          unless input_line[-1] == "\n" || !stdin_newlines
+            stdin_stream.write("\n")
+          end
         end
 
         stdin_stream.close
 
         { stdout_stream => stdout, stderr_stream => stderr }.each_pair do |stream, callback|
           Thread.new do
-            begin
-              until (line = stream.gets).nil?
-                callback.call(line)
-              end
-            rescue IOError => e
-              # ignore
+            until (line = stream.gets).nil?
+              callback.call(line)
             end
+          rescue IOError => e
+            # ignore
           end
         end
 

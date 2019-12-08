@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Executo
   class Configuration
     attr_accessor :redis
