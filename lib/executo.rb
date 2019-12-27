@@ -68,8 +68,8 @@ module Executo
     def feedback(feedback, state, exitstatus=nil, stdout='', stderr='', context={})
       Sidekiq::Client.new(Executo.active_job_connection_pool).push({
         'class' => ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper,
-        # 'queue' => 'default',
-        # 'job' => 'Executo::FeedbackProcessJob',
+        'queue' => 'default',
+        'wrapped' => 'Executo::FeedbackProcessJob',
         'args' => [
             {
               'job_class' => 'Executo::FeedbackProcessJob',
