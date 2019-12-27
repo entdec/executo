@@ -3,6 +3,8 @@
 module Executo
   class FeedbackProcessJob < ActiveJob::Base
     def perform(feedback, state, exitstatus=nil, stdout='', stderr='', context={})
+      return unless feedback['service'].present?
+
       feedback_service = feedback['service'].safe_constantize
 
       return unless feedback_service
