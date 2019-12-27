@@ -13,7 +13,7 @@ module Executo
       Executo.config.logger.debug "options: #{options}"
 
       Executo.config.logger.info 'Command started'
-      Executo.config.callback(:started)
+      Executo.feedback(options['feedback'], 'started')
 
       begin
         stdout = []
@@ -29,15 +29,16 @@ module Executo
           shell_escape: options.key?('shell_escape') ? options['shell_escape'] : true
         )
 
-        Executo.config.callback(
-          status.success? ? :completed : :failed,
-          status.exitstatus,
+        Executo.feedback(
+          options['feedback'],
+          status.success? ? 'completed' : 'failed',
+          status.exitstatus.to_i,
           stdout.join,
           stderr.join,
           'command' => command,
           'params' => params,
           'options' => options,
-          'pid' => status.pid
+          'pid' => status.pid.to_i
         )
       rescue StandardError => e
         # This only happens if something really broke, not worth a callback?
@@ -46,6 +47,7 @@ module Executo
       end
 
       Executo.config.logger.info "Command finished, using pid #{status.pid}"
+      Executo.feedback(options['feedback'], 'finished')
     end
   end
 end
