@@ -26,7 +26,8 @@ TODO: Write usage instructions here
 
 ## Development
 
-Run worker using `sidekiq -r boot.rb -C sidekiq.yml`
+Run worker using `sidekiq -r ./boot.rb -C sidekiq.yml`
+Run active-job worker using `sidekiq -r ./boot_activejob.rb`
 
 Publish jobs using:
 ```ruby
