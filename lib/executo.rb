@@ -65,27 +65,6 @@ module Executo
       Sidekiq::Client.new(connection_pool).push(options)
     end
 
-    def feedback(feedback, state, exitstatus=nil, stdout='', stderr='', context={})
-      Sidekiq::Client.new(Executo.active_job_connection_pool).push({
-        'class' => ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper,
-        'queue' => 'default',
-        'wrapped' => 'Executo::FeedbackProcessJob',
-        'args' => [
-            {
-              'job_class' => 'Executo::FeedbackProcessJob',
-              'arguments': [
-                feedback,
-                state,
-                exitstatus,
-                stdout,
-                stderr,
-                context
-              ]
-            }
-          ]
-      })
-    end
-
     def connection_pool
       @connection_pool ||= ConnectionPool.new(size: 5, timeout: 5) { Redis.new(config.redis) }
     end

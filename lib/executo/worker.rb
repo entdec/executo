@@ -13,7 +13,7 @@ module Executo
       Executo.config.logger.debug "options: #{options}"
 
       Executo.config.logger.info 'Command started'
-      Executo.feedback(options['feedback'], 'started')
+      feedback(options['feedback'], 'started')
 
       begin
         stdout = []
@@ -29,7 +29,7 @@ module Executo
           shell_escape: options.key?('shell_escape') ? options['shell_escape'] : true
         )
 
-        Executo.feedback(
+        feedback(
           options['feedback'],
           status.success? ? 'completed' : 'failed',
           status.exitstatus.to_i,
@@ -47,7 +47,30 @@ module Executo
       end
 
       Executo.config.logger.info "Command finished, using pid #{status.pid}"
-      Executo.feedback(options['feedback'], 'finished')
+      feedback(options['feedback'], 'finished')
+    end
+
+    private
+
+    def feedback(feedback, state, exitstatus=nil, stdout='', stderr='', context={})
+      Sidekiq::Client.new(Executo.active_job_connection_pool).push({
+        'class' => ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper,
+        'queue' => 'default',
+        'wrapped' => 'Executo::FeedbackProcessJob',
+        'args' => [
+            {
+              'job_class' => 'Executo::FeedbackProcessJob',
+              'arguments': [
+                feedback,
+                state,
+                exitstatus,
+                stdout,
+                stderr,
+                context
+              ]
+            }
+          ]
+      })
     end
   end
 end
