@@ -52,25 +52,25 @@ module Executo
 
     private
 
-    def feedback(feedback, state, exitstatus=nil, stdout='', stderr='', context={})
-      Sidekiq::Client.new(Executo.active_job_connection_pool).push({
+    def feedback(feedback, state, exitstatus = nil, stdout = '', stderr = '', context = {})
+      Sidekiq::Client.new(Executo.active_job_connection_pool).push(
         'class' => ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper,
         'queue' => 'default',
         'wrapped' => 'Executo::FeedbackProcessJob',
         'args' => [
-            {
-              'job_class' => 'Executo::FeedbackProcessJob',
-              'arguments': [
-                feedback,
-                state,
-                exitstatus,
-                stdout,
-                stderr,
-                context
-              ]
-            }
-          ]
-      })
+          {
+            'job_class' => 'Executo::FeedbackProcessJob',
+            'arguments': [
+              feedback,
+              state,
+              exitstatus,
+              stdout,
+              stderr,
+              context
+            ]
+          }
+        ]
+      )
     end
   end
 end

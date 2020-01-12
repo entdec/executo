@@ -17,8 +17,7 @@ module Executo
       perform
     end
 
-    def perform
-    end
+    def perform; end
 
     def self.arguments(*names)
       names.each do |name|

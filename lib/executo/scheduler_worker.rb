@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# https://gist.github.com/jordinl83/08ad9afd8f5046ddd9d38bcebf373e74
+
 module Executo
   class SchedulerWorker
     include Sidekiq::Worker

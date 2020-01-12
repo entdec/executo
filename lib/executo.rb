@@ -65,6 +65,16 @@ module Executo
       Sidekiq::Client.new(connection_pool).push(options)
     end
 
+    def schedule(target, list)
+      options = {
+        'retry' => 0,
+        'queue' => target,
+        'class' => 'Executo::SetScheduleWorker',
+        'args' => list
+      }
+      Sidekiq::Client.new(connection_pool).push(options)
+    end
+
     def connection_pool
       @connection_pool ||= ConnectionPool.new(size: 5, timeout: 5) { Redis.new(config.redis) }
     end

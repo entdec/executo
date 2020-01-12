@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require 'active_job'
 require 'executo'
 require 'pry'
 
-class LsFeedbackProcessService < Executo::FeedbackProcessService
+class LsProcessService < Executo::FeedbackProcessService
   arguments :now
   def perform
-    puts "HALLO "*80
+    puts 'HALLO ' * 80
     puts "now: #{now}"
     puts stdout
   end

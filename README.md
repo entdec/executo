@@ -43,6 +43,13 @@ Publish encrypted jobs using:
 Executo.publish('localhost', 'ls', ['-al'], encrypt: true)
 ```
 
+Schedule for a host:
+```ruby
+Executo.schedule('localhost', [
+  ['30 * * * *', { class_name: '', arguments: {} }]
+])
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/executo. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
