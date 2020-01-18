@@ -38,11 +38,13 @@ module Executo
 
         { stdout_stream => stdout, stderr_stream => stderr }.each_pair do |stream, callback|
           Thread.new do
-            until (line = stream.gets).nil?
-              callback.call(line)
+            begin
+              until (line = stream.gets).nil?
+                callback.call(line)
+              end
+            rescue IOError => e
+              # ignore
             end
-          rescue IOError => e
-            # ignore
           end
         end
 
