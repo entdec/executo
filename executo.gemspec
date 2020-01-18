@@ -40,7 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activejob', '~> 5.2'
   spec.add_dependency 'activesupport', '~> 5.2'
   spec.add_dependency 'sidekiq', '~> 5.2'
-  spec.add_dependency 'curb', '~> 0'
 
   spec.add_development_dependency 'bundler', '~> 1.17'
   spec.add_development_dependency 'minitest', '~> 5.0'
