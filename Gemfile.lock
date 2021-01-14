@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    executo (0.3.3)
+    executo (0.3.5)
       activejob (> 5.1)
       activesupport (> 5.1)
       sidekiq (> 5.1)
