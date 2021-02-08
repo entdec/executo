@@ -18,8 +18,8 @@ Executo.setup do |config|
     }
 
     data[:exitstatus] = exitstatus.to_i if exitstatus
-    data[:stdout] = stdout if stdout
-    data[:stderr] = stderr if stderr
+    data[:stdout] = stdout.force_encoding('utf-8') if stdout
+    data[:stderr] = stderr.force_encoding('utf-8') if stderr
     data[:pid] = context['pid'].to_i if context['pid']
 
     uri = URI.parse(callback_url)
