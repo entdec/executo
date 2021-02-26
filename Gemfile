@@ -8,6 +8,6 @@ git_source(:entdec) { |repo_name| "git@code.entropydecelerator.com:#{repo_name}.
 # Specify your gem's dependencies in executo.gemspec
 gem 'pry'
 
-gemspec
-
 gem 'auxilium', '~> 0.2', entdec: 'components/auxilium'
+
+gemspec
