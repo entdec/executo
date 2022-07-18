@@ -44,7 +44,7 @@ module Executo
       Executo.config.logger.error e.backtrace.join("\n")
       feedback(options['feedback'], 'failed')
     ensure
-      Executo.config.logger.info "Command finished, using pid #{status.pid}"
+      Executo.config.logger.info "Command finished, using pid #{status&.pid}"
       feedback(options['feedback'], 'finished')
     end
 
@@ -58,7 +58,7 @@ module Executo
         'args' => [
           {
             'job_class' => 'Executo::FeedbackProcessJob',
-            'arguments': [
+            'arguments' => [
               feedback,
               state,
               exitstatus,

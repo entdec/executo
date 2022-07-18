@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'active_job'
+require 'bundler/setup'
 require 'executo'
+require 'active_job'
 require 'pry'
 
 class LsProcessService < Executo::FeedbackProcessService

@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require 'bundler/setup'
+Bundler.require
 require 'executo'
 require 'net/http'
 require 'uri'
+
+Sidekiq.strict_args!
 
 Executo.setup do |config|
   config.redis = { url: 'redis://localhost:6379/1' }

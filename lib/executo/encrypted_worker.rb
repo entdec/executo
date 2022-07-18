@@ -4,8 +4,6 @@ require 'executo/worker'
 
 module Executo
   class EncryptedWorker < Worker
-    include Sidekiq::Worker
-
     # @param [String] encrypted_command
     # @param [Array] encrypted_params
     # @param [Hash] encrypted_options
