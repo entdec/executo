@@ -9,7 +9,7 @@ module Executo
     def initialize
       @redis = {}
       @active_job_redis = {}
-      @logger = Logger.new(STDOUT)
+      @logger = ActiveSupport::TaggedLogging.new(Logger.new($stdout))
       @logger.level = Logger::INFO
     end
 

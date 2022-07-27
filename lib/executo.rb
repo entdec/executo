@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 require 'active_support/message_encryptor'
+require 'active_support/tagged_logging'
 require 'sidekiq'
 require 'active_job'
+require 'securerandom'
+require 'active_attr'
 
 require 'executo/cli'
+require 'executo/tagged_logger'
 require 'executo/configuration'
 require 'executo/version'
 require 'executo/encrypted_worker'
@@ -12,12 +16,18 @@ require 'executo/scheduler_worker'
 require 'executo/worker'
 require 'executo/feedback_process_job'
 require 'executo/feedback_process_service'
+require 'executo/command_dsl'
+require 'executo/command'
+
+require 'executo/commands/imapsync_test'
 
 module Executo
   class Error < StandardError; end
 
   class << self
     attr_reader :config
+
+    delegate :logger, to: :config
 
     def setup
       @config = Configuration.new
@@ -51,18 +61,21 @@ module Executo
     #        at - timestamp to schedule the job (optional), must be Numeric (e.g. Time.now.to_f)
     #        retry - whether to retry this job if it fails, default true or an integer number of retries
     #        backtrace - whether to save any error backtrace, default false
-    def publish(target, command, params = [], encrypt: false, options: {}, job_options: {}, feedback: {})
+    def publish(target:, command:, parameters: [], encrypt: false, options: {}, job_options: {}, feedback: {})
       options['feedback'] = feedback
+      options['feedback']['id'] ||= SecureRandom.uuid
 
-      args = [command, params, options.deep_stringify_keys]
+      args = [command, parameters, options.deep_stringify_keys]
       args = args.map { |a| encrypt(a) } if encrypt
 
-      options = { 'retry' => 0 }.merge(job_options).merge(
+      sidekiq_options = { 'retry' => 0 }.merge(job_options).merge(
         'queue' => target,
         'class' => encrypt ? 'Executo::EncryptedWorker' : 'Executo::Worker',
         'args' => args
       )
-      Sidekiq::Client.new(connection_pool).push(options)
+      Sidekiq::Client.new(connection_pool).push(sidekiq_options)
+
+      options.dig('feedback', 'id')
     end
 
     def schedule(target, list)

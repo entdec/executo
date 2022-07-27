@@ -2,16 +2,14 @@
 
 module Executo
   class FeedbackProcessJob < ActiveJob::Base
-    def perform(feedback, state, exitstatus = nil, stdout = '', stderr = '', context = {})
-      return unless feedback['service'].present?
+    def perform(feedback, results)
+      feedback_service_class = feedback['service']&.safe_constantize
+      unless feedback_service_class
+        Executo.logger.error("Feedback service #{feedback['service']} not found")
+        return
+      end
 
-      feedback_service = feedback['service'].safe_constantize
-
-      return unless feedback_service
-
-      service = feedback_service.new(state, exitstatus, stdout, stderr, context)
-      service.arguments = feedback['args']
-      service.call
+      feedback_service_class.process_feedback(feedback, results)
     end
   end
 end

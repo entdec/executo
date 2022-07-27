@@ -15,4 +15,5 @@ end
 
 Sidekiq.configure_server do |config|
   config.redis = Executo.config.redis
+  config.logger = Executo.config.logger.tagged('Sidekiq')
 end

@@ -7,17 +7,24 @@ require 'pry'
 
 class LsProcessService < Executo::FeedbackProcessService
   arguments :now
+
   def perform
-    puts 'HALLO ' * 80
-    puts "now: #{now}"
-    puts stdout
+    stdout&.each do |line|
+      logger.info line
+    end
   end
 end
 
-Sidekiq.configure_server do |config|
-  config.redis = { url: 'redis://localhost:6379/0' }
+Executo.setup do |config|
+  config.redis = { url: 'redis://localhost:6379/1' }
+  config.active_job_redis = { url: 'redis://localhost:6379/0' }
 end
 
-# Executo.setup do |config|
-#   config.redis = { url: 'redis://localhost:6379/1' }
-# end
+ActiveJob::Base.logger = Executo.config.logger.tagged('ActiveJob')
+ActiveJob::Base.logger.level = Logger::WARN
+
+Sidekiq.configure_server do |config|
+  config.logger = Executo.config.logger.tagged('Sidekiq')
+  config.logger.level = Logger::WARN
+  config.redis = { url: 'redis://localhost:6379/0' }
+end

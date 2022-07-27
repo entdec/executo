@@ -15,18 +15,11 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://code.entropydecelerator.com/components/excecuto'
   spec.license       = 'MIT'
 
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
-
-    spec.metadata['homepage_uri'] = spec.homepage
-    spec.metadata['source_code_uri'] = 'https://code.entropydecelerator.com/components/excecuto'
-    spec.metadata['changelog_uri'] = 'https://code.entropydecelerator.com/components/excecuto'
-  else
-    raise 'RubyGems 2.0 or newer is required to protect against ' \
-      'public gem pushes.'
-  end
+  spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+  spec.metadata['rubygems_mfa_required'] = 'true'
+  spec.metadata['homepage_uri'] = spec.homepage
+  spec.metadata['source_code_uri'] = 'https://code.entropydecelerator.com/components/excecuto'
+  spec.metadata['changelog_uri'] = 'https://code.entropydecelerator.com/components/excecuto'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -37,13 +30,15 @@ Gem::Specification.new do |spec|
   spec.executables   = 'executo'
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'activejob', '> 5.1'
-  spec.add_dependency 'activesupport', '> 5.1'
+  spec.add_dependency 'active_attr', '>= 0.15'
+  spec.add_dependency 'activejob', '> 7.0.0'
+  spec.add_dependency 'activemodel', '> 7.0.0'
+  spec.add_dependency 'activesupport', '> 7.0.0'
   spec.add_dependency 'sidekiq', '> 5.1'
 
   spec.add_development_dependency 'auxilium', '~> 3'
   spec.add_development_dependency 'minitest', '> 5.0'
+  spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake', '> 10.0'
   spec.add_development_dependency 'rubocop'
-  spec.add_development_dependency 'pry'
 end

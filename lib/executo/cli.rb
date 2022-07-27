@@ -5,51 +5,58 @@ require 'shellwords'
 
 module Executo
   class CLI
-    def self.run(cmd, stdin_content: [], stdin_newlines: true, stdout:, stderr:, shell_escape: true)
-      raise 'cmd must be a String or array of Strings.' \
-        unless cmd.is_a?(String) || (cmd.is_a?(Array) && cmd.all? { |c| c.is_a?(String) })
-      raise 'stdout must be a Proc.' unless stdout.is_a?(Proc)
-      raise 'stderr must be a Proc.' unless stderr.is_a?(Proc)
+    class << self
+      def run(cmd, stdout:, stderr:, stdin_content: [], stdin_newlines: true, shell_escape: true)
+        raise 'cmd must be an array of Strings.' unless array_of_strings?(cmd)
+        raise 'stdout must be a Proc.' unless stdout.is_a?(Proc)
+        raise 'stderr must be a Proc.' unless stderr.is_a?(Proc)
+        raise 'stdin_content must be an Array of Strings.' unless array_of_strings?(stdin_content)
 
-      stdin_content = [stdin_content].flatten
-      raise 'stdin_content must be an Array of Strings.' \
-        unless stdin_content.is_a?(Array) && stdin_content.all? { |c| c.is_a?(String) }
+        computed_cmd = escaped_command(cmd, shell_escape:)
+        Executo.logger.debug "computed cmd: #{computed_cmd}"
+        Open3.popen3(computed_cmd) do |stdin_stream, stdout_stream, stderr_stream, thread|
+          threads = []
+          threads << write_stream(stdin_stream, stdin_content, newlines: stdin_newlines)
+          threads << read_stream(stdout_stream, stdout)
+          threads << read_stream(stderr_stream, stderr)
+          threads << thread
 
-      Executo.config.logger.debug "passed cmd: #{cmd}"
-
-      computed_cmd = if cmd.is_a?(Array)
-                       (shell_escape ? cmd.shelljoin : cmd.join)
-                     else
-                       (shell_escape ? cmd.shellsplit.shelljoin : cmd.shellsplit.join)
-                     end
-
-      Executo.config.logger.debug "computed cmd: #{computed_cmd}"
-      Open3.popen3(computed_cmd) do |stdin_stream, stdout_stream, stderr_stream, thread|
-        Executo.config.logger.debug "thread: #{thread}"
-        stdin_content.each do |input_line|
-          stdin_stream.write(input_line)
-
-          unless input_line[-1] == "\n" || !stdin_newlines
-            stdin_stream.write("\n")
-          end
+          threads.each(&:join)
+          thread.value
         end
+      end
 
-        stdin_stream.close
+      def escaped_command(command, shell_escape: true)
+        return command.join unless shell_escape
 
-        { stdout_stream => stdout, stderr_stream => stderr }.each_pair do |stream, callback|
-          Thread.new do
-            begin
-              until (line = stream.gets).nil?
-                callback.call(line)
-              end
-            rescue IOError => e
-              # ignore
-            end
+        command.shelljoin
+      end
+
+      def write_stream(stream, content, newlines: true)
+        Thread.new do
+          content.each do |input_line|
+            stream.write(input_line)
+            stream.write("\n") if input_line[-1] != "\n" && newlines
           end
+        rescue Errno::EPIPE
+          nil
+        ensure
+          stream.close
         end
+      end
 
-        thread.join
-        thread.value
+      def read_stream(stream, callback)
+        Thread.new do
+          until (line = stream.gets).nil?
+            callback.call(line)
+          end
+        rescue IOError
+          # ignore
+        end
+      end
+
+      def array_of_strings?(array)
+        array.is_a?(Array) && array.all? { |c| c.is_a?(String) }
       end
     end
   end
