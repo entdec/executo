@@ -12,7 +12,7 @@ module Executo
         raise 'stderr must be a Proc.' unless stderr.is_a?(Proc)
         raise 'stdin_content must be an Array of Strings.' unless array_of_strings?(stdin_content)
 
-        computed_cmd = escaped_command(cmd, shell_escape:)
+        computed_cmd = escaped_command(cmd, shell_escape: shell_escape)
         Executo.logger.debug "computed cmd: #{computed_cmd}"
         Open3.popen3(computed_cmd) do |stdin_stream, stdout_stream, stderr_stream, thread|
           threads = []
