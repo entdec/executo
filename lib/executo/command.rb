@@ -27,7 +27,7 @@ module Executo
     private
 
     def perform
-      Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: id, args: attributes.to_h })
+      Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: id, arguments: attributes.to_h })
     end
 
     def safe_parameters
@@ -40,7 +40,7 @@ module Executo
 
     class << self
       def process_feedback(feedback, results)
-        cmd = new(feedback['args'].merge(id: feedback['id']))
+        cmd = new(feedback['arguments'].merge(id: feedback['id']))
         cmd.setup_logger(feedback['id'])
         cmd.process_results(results.symbolize_keys)
       end

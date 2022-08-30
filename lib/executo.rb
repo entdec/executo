@@ -75,6 +75,7 @@ module Executo
       )
       Sidekiq::Client.new(connection_pool).push(sidekiq_options)
 
+      logger.info("Published #{command} to #{target} with id #{options['feedback']['id']}")
       options.dig('feedback', 'id')
     end
 
