@@ -32,7 +32,7 @@ module Executo
 
     def safe_parameters
       local_parameter_values = {}
-      local_parameter_values = implicit_parameter_values #xif respond_to?(:implicit_parameter_values)
+      local_parameter_values = implicit_parameter_values if respond_to?(:implicit_parameter_values)
       local_parameter_values = local_parameter_values.merge(parameter_values)
 
       parameters.split.map { |parameter| parameter % local_parameter_values }
