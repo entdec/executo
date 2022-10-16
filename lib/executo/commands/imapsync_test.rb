@@ -46,7 +46,7 @@ class ImapSyncTest < Executo::Command
 
   def implicit_parameter_values
     {
-      logfile: "/tmp/imapsync_#{id}.log"
+      logfile: "/tmp/imapsync_#{executo_id}.log"
     }
   end
 end

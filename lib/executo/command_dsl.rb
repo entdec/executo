@@ -7,15 +7,6 @@ module Executo
 
     delegate :target, :command, :parameters, :feedback_interval, to: :class
 
-    attr_reader :id, :parameter_values
-
-    def initialize(*args)
-      @id = args.first&.delete(:id) || SecureRandom.uuid
-      @errors = ActiveModel::Errors.new(self)
-      @parameter_values = args.first&.delete(:parameter_values) || {}
-      super(*args)
-    end
-
     class_methods do
       def call(*args)
         new(*args).call

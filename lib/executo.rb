@@ -62,7 +62,7 @@ module Executo
     #        retry - whether to retry this job if it fails, default true or an integer number of retries
     #        backtrace - whether to save any error backtrace, default false
     def publish(target:, command:, parameters: [], encrypt: false, options: {}, job_options: {}, feedback: {})
-      options['feedback'] = feedback
+      options['feedback'] = feedback&.stringify_keys
       options['feedback']['id'] ||= SecureRandom.uuid
 
       args = [command, parameters, options.deep_stringify_keys]
@@ -73,7 +73,13 @@ module Executo
         'class' => encrypt ? 'Executo::EncryptedWorker' : 'Executo::Worker',
         'args' => args
       )
-      Sidekiq::Client.new(connection_pool).push(sidekiq_options)
+
+      if defined?(Rails) && Rails.env.test?
+        $executo_jobs ||= {}
+        $executo_jobs[options.dig('feedback', 'id')] = sidekiq_options
+      else
+        Sidekiq::Client.new(connection_pool).push(sidekiq_options)
+      end
 
       logger.info("Published #{command} to #{target} with id #{options['feedback']['id']}")
       options.dig('feedback', 'id')

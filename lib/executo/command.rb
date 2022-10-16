@@ -5,7 +5,14 @@ module Executo
     include CommandDsl
     include TaggedLogger
 
-    attr_reader :id, :status, :stdout, :stderr, :exitstatus
+    attr_reader :executo_id, :parameter_values, :status, :stdout, :stderr, :exitstatus
+
+    def initialize(*args)
+      @executo_id = args.first&.delete(:id) || SecureRandom.uuid
+      @errors = ActiveModel::Errors.new(self)
+      @parameter_values = args.first&.delete(:parameter_values) || {}
+      super(*args)
+    end
 
     def call
       raise 'missing target' unless target
@@ -27,7 +34,7 @@ module Executo
     private
 
     def perform
-      Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: id, arguments: attributes.to_h })
+      Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h })
     end
 
     def safe_parameters
