@@ -5,7 +5,7 @@ module Executo
     extend ActiveSupport::Concern
     include ActiveAttr::Model
 
-    delegate :target, :command, :parameters, :feedback_interval, to: :class
+    delegate :targets, :command, :parameters, :feedback_interval, to: :class
 
     class_methods do
       def call(*args)
