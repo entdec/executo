@@ -13,8 +13,13 @@ module Executo
       end
 
       def target(value = nil)
-        @target = value if value.present?
-        @target
+        targets << value if value.present?
+        targets
+      end
+
+      def targets(value = nil)
+        @targets = value if value.present?
+        @targets ||= []
       end
 
       def command(value = nil)

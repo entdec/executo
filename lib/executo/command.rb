@@ -15,7 +15,7 @@ module Executo
     end
 
     def call
-      raise 'missing target' unless target
+      raise 'missing target' unless targets.present?
 
       perform
     end
@@ -34,6 +34,11 @@ module Executo
     private
 
     def perform
+      results = targets.map { |target| execute_on_target(target) }
+      results.size == 1 ? results.first : results
+    end
+
+    def execute_on_target(target)
       Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h })
     end
 
