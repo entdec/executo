@@ -34,14 +34,20 @@ module Executo
     private
 
     def perform
-      results = targets.map { |target| execute_on_target(target)}
+      results = executo_targets.map { |target| execute_on_target(target)}
       results.size == 1 ? results.first : results
     end
 
     def execute_on_target(target)
-      target = instance_exec(&target) if target.is_a?(Proc)
-
       Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h })
+    end
+
+    def executo_targets
+      return @executo_targets if @executo_targets.present?
+
+      @executo_targets = targets.is_a?(Proc) ? instance_exec(&targets) : targets
+      @executo_targets = @executo_targets.map { |target| instance_exec(&target) if target.is_a?(Proc) }.compact
+      @executo_targets
     end
 
     def safe_parameters
