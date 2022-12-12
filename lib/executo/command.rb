@@ -9,15 +9,15 @@ module Executo
 
     def initialize(*args)
       @executo_id = args.first&.delete(:id) || SecureRandom.uuid
-      @executo_targets = [args.first&.delete(:target)]
-      @executo_targets ||= args.first&.delete(:targets)
+      @executo_targets = [args.first&.delete(:target)] if args.first&.key?(:target)
+      @executo_targets ||= args.first&.delete(:targets) if args.first&.key?(:targets)
       @errors = ActiveModel::Errors.new(self)
       @parameter_values = args.first&.delete(:parameter_values) || {}
       super(*args)
     end
 
     def call
-      raise 'missing target' unless targets.present?
+      raise 'missing target' unless executo_targets.present?
 
       perform
     end
@@ -48,7 +48,7 @@ module Executo
       return @executo_targets if @executo_targets.present?
 
       @executo_targets = targets.is_a?(Proc) ? instance_exec(&targets) : targets
-      @executo_targets = @executo_targets.map { |target| instance_exec(&target) if target.is_a?(Proc) }.compact
+      @executo_targets = @executo_targets.map { |target| target.is_a?(Proc) ? instance_exec(&target) : target }.compact
       @executo_targets
     end
 
