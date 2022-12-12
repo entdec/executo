@@ -9,6 +9,8 @@ module Executo
 
     def initialize(*args)
       @executo_id = args.first&.delete(:id) || SecureRandom.uuid
+      @executo_targets = [args.first&.delete(:target)]
+      @executo_targets ||= args.first&.delete(:targets)
       @errors = ActiveModel::Errors.new(self)
       @parameter_values = args.first&.delete(:parameter_values) || {}
       super(*args)

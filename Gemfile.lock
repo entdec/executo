@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    executo (0.3.12)
+    executo (0.3.13)
       active_attr (>= 0.15)
       activejob (> 7.0.0)
       activemodel (> 7.0.0)
