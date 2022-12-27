@@ -5,7 +5,7 @@ module Executo
     extend ActiveSupport::Concern
     include ActiveAttr::Model
 
-    delegate :targets, :command, :parameters, :feedback_interval, :sync, to: :class
+    delegate :command, :parameters, :feedback_interval, :sync, to: :class
 
     class_methods do
       def call(*args)
@@ -13,13 +13,8 @@ module Executo
       end
 
       def target(value = nil)
-        targets << value if value.present?
-        targets
-      end
-
-      def targets(value = nil)
-        @targets = value if value.present?
-        @targets ||= []
+        @target = value if value.present?
+        @target
       end
 
       def command(value = nil)

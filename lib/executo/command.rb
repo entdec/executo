@@ -5,25 +5,23 @@ module Executo
     include CommandDsl
     include TaggedLogger
 
-    attr_reader :executo_id, :parameter_values, :status, :stdout, :stderr, :exitstatus
+    attr_reader :executo_id, :parameter_values, :status, :stdout, :stderr, :exitstatus, :target
 
     def initialize(*args)
       @executo_id = args.first&.delete(:id) || SecureRandom.uuid
-      @executo_targets = [args.first&.delete(:target)] if args.first&.key?(:target)
-      @executo_targets ||= args.first&.delete(:targets) if args.first&.key?(:targets)
+      @target = args.first&.delete(:target) || self.class.target
       @errors = ActiveModel::Errors.new(self)
       @parameter_values = args.first&.delete(:parameter_values) || {}
       super(*args)
     end
 
     def call
-      raise MissingTargetError unless executo_targets.present?
+      raise MissingTargetError unless target_name.present?
 
-      if sync
-        perform_sync
-      else
-        perform
-      end
+      Executo.publish(target: target_name, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h, sync: sync })
+      return perform_sync if sync
+
+      { target: target_name, id: executo_id, result: result }
     end
 
     def process_results(results)
@@ -32,25 +30,18 @@ module Executo
       public_send(state.to_sym, results) if respond_to?(state.to_sym)
     end
 
-    def setup_logger(id)
+    def setup_logger
       logger_add_tag(self.class.name)
-      logger_add_tag(id)
+      logger_add_tag(executo_id)
     end
 
     private
 
-    def perform
-      results = executo_targets.map { |target| execute_on_target(target)}
-      results.size == 1 ? results.first : results
-    end
-
     def perform_sync
-      raise MultipleTargetsError if executo_targets.size > 1
-
-      id = execute_on_target(executo_targets.first)
       return_value = nil
+      results = {}
 
-      client = PubSub.new("sync_#{id}")
+      client = PubSub.new("sync_#{executo_id}")
       client.subscribe do |message|
         results = message.symbolize_keys
         value = process_results(results)
@@ -64,19 +55,11 @@ module Executo
         end
       end
 
-      return_value
+      results.merge(target: target_name, id: executo_id, return_value: return_value)
     end
 
-    def execute_on_target(target)
-      Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h, sync: sync })
-    end
-
-    def executo_targets
-      return @executo_targets if @executo_targets.present?
-
-      @executo_targets = targets.is_a?(Proc) ? instance_exec(&targets) : targets
-      @executo_targets = @executo_targets.map { |target| target.is_a?(Proc) ? instance_exec(&target) : target }.compact
-      @executo_targets
+    def target_name
+      @target_name ||= target.is_a?(Proc) ? instance_exec(&target) : target
     end
 
     def safe_parameters
@@ -90,7 +73,7 @@ module Executo
     class << self
       def process_feedback(feedback, results)
         cmd = new(feedback['arguments'].merge(id: feedback['id']))
-        cmd.setup_logger(feedback['id'])
+        cmd.setup_logger
         cmd.process_results(results.symbolize_keys)
       end
     end
