@@ -21,7 +21,7 @@ module Executo
       Executo.publish(target: target_name, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h, sync: sync })
       return perform_sync if sync
 
-      { target: target_name, id: executo_id, result: result }
+      { target: target_name, id: executo_id }
     end
 
     def process_results(results)

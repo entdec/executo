@@ -33,12 +33,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activejob', '> 7.0.0'
   spec.add_dependency 'activemodel', '> 7.0.0'
   spec.add_dependency 'activesupport', '> 7.0.0'
+  spec.add_dependency 'pry'
   spec.add_dependency 'sidekiq', '> 5.1', '< 7.0'
   spec.add_dependency 'redis', '< 5'
 
   spec.add_development_dependency 'auxilium', '~> 3'
   spec.add_development_dependency 'minitest', '> 5.0'
-  spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake', '> 10.0'
   spec.add_development_dependency 'rubocop'
 end
