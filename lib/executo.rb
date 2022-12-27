@@ -6,6 +6,7 @@ require 'sidekiq'
 require 'active_job'
 require 'securerandom'
 require 'active_attr'
+require 'pry'
 
 require 'executo/cli'
 require 'executo/tagged_logger'
@@ -18,11 +19,15 @@ require 'executo/feedback_process_job'
 require 'executo/feedback_process_service'
 require 'executo/command_dsl'
 require 'executo/command'
+require 'executo/pub_sub'
 
 require 'executo/commands/imapsync_test'
 
 module Executo
   class Error < StandardError; end
+  class MissingTargetError < Error; end
+  class MultipleTargetsError < Error; end
+  class CommandError < Error; end
 
   class << self
     attr_reader :config
@@ -84,6 +89,7 @@ module Executo
       logger.info("Published #{command} to #{target} with id #{options['feedback']['id']}")
       options.dig('feedback', 'id')
     end
+
 
     def schedule(target, list)
       options = {

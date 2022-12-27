@@ -90,6 +90,19 @@ module Executo
     def send_feedback(results)
       results.merge!(runtime_seconds: (Time.current - @started_at).to_i)
       logger.info "Command #{results[:state]} after #{results[:runtime_seconds]} seconds"
+
+      if options.dig('feedback', 'sync')
+        send_sync(results)
+      else
+        send_async(results)
+      end
+    end
+
+    def send_sync(results)
+      Executo::PubSub.new("sync_#{options.dig('feedback', 'id')}").publish(results.deep_stringify_keys)
+    end
+
+    def send_async(results)
       Sidekiq::Client.new(Executo.active_job_connection_pool).push(
         'class' => ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper,
         'queue' => 'default',

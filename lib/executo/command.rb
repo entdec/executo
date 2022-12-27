@@ -17,9 +17,13 @@ module Executo
     end
 
     def call
-      raise 'missing target' unless executo_targets.present?
+      raise MissingTargetError unless executo_targets.present?
 
-      perform
+      if sync
+        perform_sync
+      else
+        perform
+      end
     end
 
     def process_results(results)
@@ -40,8 +44,31 @@ module Executo
       results.size == 1 ? results.first : results
     end
 
+    def perform_sync
+      raise MultipleTargetsError if executo_targets.size > 1
+
+      id = execute_on_target(executo_targets.first)
+      return_value = nil
+
+      client = PubSub.new("sync_#{id}")
+      client.subscribe do |message|
+        results = message.symbolize_keys
+        value = process_results(results)
+        case results[:state]
+        when 'completed'
+          return_value = value
+        when 'failed'
+          raise CommandError, value
+        when 'finished'
+          client.unsubscribe
+        end
+      end
+
+      return_value
+    end
+
     def execute_on_target(target)
-      Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h })
+      Executo.publish(target: target, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h, sync: sync })
     end
 
     def executo_targets
