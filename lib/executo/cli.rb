@@ -14,8 +14,8 @@ module Executo
 
         computed_cmd = escaped_command(cmd, shell_escape: shell_escape)
 
-        Executo.logger.info "working folder: #{working_folder}"
-        Executo.logger.info "computed cmd: #{computed_cmd}"
+        Executo.logger.info "Working folder: #{working_folder}"
+        Executo.logger.info "Computed cmd: #{computed_cmd}"
         Open3.popen3(computed_cmd, chdir: working_folder) do |stdin_stream, stdout_stream, stderr_stream, thread|
           threads = []
           threads << write_stream(stdin_stream, stdin_content, newlines: stdin_newlines)
