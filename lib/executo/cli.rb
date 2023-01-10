@@ -13,6 +13,8 @@ module Executo
         raise 'stdin_content must be an Array of Strings.' unless array_of_strings?(stdin_content)
 
         computed_cmd = escaped_command(cmd, shell_escape: shell_escape)
+
+        Executo.logger.debug "working folder: #{working_folder}"
         Executo.logger.debug "computed cmd: #{computed_cmd}"
         Open3.popen3(computed_cmd, chdir: working_folder) do |stdin_stream, stdout_stream, stderr_stream, thread|
           threads = []
