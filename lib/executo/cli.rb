@@ -31,7 +31,7 @@ module Executo
       def escaped_command(command, shell_escape: true)
         return command.join unless shell_escape
 
-        command.shelljoin
+        command.shelljoin.gsub('{SPATIE}', '\ ')
       end
 
       def write_stream(stream, content, newlines: true)
