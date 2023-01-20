@@ -5,21 +5,21 @@ module Executo
     include CommandDsl
     include TaggedLogger
 
-    attr_reader :executo_id, :parameter_values, :status, :stdout, :stderr, :exitstatus, :target
+    attr_reader :executo_id, :parameter_values, :status, :stdout, :stderr, :exitstatus, :target, :override_sync
 
-    def initialize(*args)
-      @executo_id = args.first&.delete(:id) || SecureRandom.uuid
-      @target = args.first&.delete(:target) || self.class.target
+    def initialize(id: nil, target: nil, parameter_values: {}, sync: false)
+      @executo_id = id || SecureRandom.uuid
+      @target = target || self.class.target
+      @parameter_values = parameter_values
       @errors = ActiveModel::Errors.new(self)
-      @parameter_values = args.first&.delete(:parameter_values) || {}
-      super(*args)
+      @override_sync = sync
     end
 
     def call
       raise MissingTargetError unless target_name.present?
 
       Executo.publish(target: target_name, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h, sync: sync })
-      return perform_sync if sync
+      return perform_sync if sync || override_sync
 
       { target: target_name, id: executo_id }
     end
