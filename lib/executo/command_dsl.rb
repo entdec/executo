@@ -32,9 +32,9 @@ module Executo
         @feedback_interval || 10
       end
 
-      def sync(value = nil, timeout: 5)
+      def sync(value = nil, timeout: nil)
         @sync = value unless value.nil?
-        @sync_timeout = timeout
+        @sync_timeout = timeout if timeout
         @sync || false
       end
 
