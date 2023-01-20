@@ -7,12 +7,14 @@ module Executo
 
     attr_reader :executo_id, :parameter_values, :status, :stdout, :stderr, :exitstatus, :target, :override_sync
 
-    def initialize(id: nil, target: nil, parameter_values: {}, sync: false)
-      @executo_id = id || SecureRandom.uuid
-      @target = target || self.class.target
-      @parameter_values = parameter_values
+
+    def initialize(*args)
+      @executo_id = args.first&.delete(:id) || SecureRandom.uuid
+      @target = args.first&.delete(:target) || self.class.target
       @errors = ActiveModel::Errors.new(self)
-      @override_sync = sync
+      @parameter_values = args.first&.delete(:parameter_values) || {}
+      @override_sync = args.first&.delete(:sync) || false
+      super(*args)
     end
 
     def call

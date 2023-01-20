@@ -8,8 +8,8 @@ module Executo
     delegate :command, :parameters, :feedback_interval, :sync, :sync_timeout, to: :class
 
     class_methods do
-      def call(**args)
-        new(**args).call
+      def call(*args)
+        new(*args).call
       end
 
       def target(value = nil)
