@@ -41,7 +41,7 @@ module Executo
       return_value = nil
       results = {}
 
-      client = PubSub.new("sync_#{executo_id}")
+      client = PubSub.new("sync_#{executo_id}", timeout: sync_timeout)
       client.subscribe do |message|
         results = message.symbolize_keys
         value = process_results(results)

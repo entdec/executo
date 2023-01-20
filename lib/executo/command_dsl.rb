@@ -5,7 +5,7 @@ module Executo
     extend ActiveSupport::Concern
     include ActiveAttr::Model
 
-    delegate :command, :parameters, :feedback_interval, :sync, to: :class
+    delegate :command, :parameters, :feedback_interval, :sync, :sync_timeout, to: :class
 
     class_methods do
       def call(*args)
@@ -32,9 +32,14 @@ module Executo
         @feedback_interval || 10
       end
 
-      def sync(value = nil)
+      def sync(value = nil, timeout: 5)
         @sync = value unless value.nil?
+        @sync_timeout = timeout
         @sync || false
+      end
+
+      def sync_timeout
+        @sync_timeout || 5
       end
     end
   end
