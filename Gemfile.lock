@@ -5,7 +5,7 @@ PATH
       active_attr (>= 0.15)
       activejob (> 7.0.0)
       activemodel (> 7.0.0)
-      activesupport (> 7.0.0)
+      activesupport (< 7.1.0)
       pry
       redis (< 5)
       sidekiq (> 5.1, < 7.0)
