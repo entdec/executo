@@ -6,5 +6,10 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem "ruby-lsp", "~> 0.2.0", group: :development
-gem "solargraph"
+group :development do
+  gem 'auxilium', '~> 3'
+  gem 'minitest', '> 5.0'
+  gem 'rake', '> 10.0'
+  gem 'rubocop'
+  gem 'ruby-lsp'
+end
