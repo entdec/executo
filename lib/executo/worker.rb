@@ -50,8 +50,8 @@ module Executo
       stdin_newlines = options.key?('stdin_newlines') ? options['stdin_newlines'] : true
       shell_escape = options.key?('shell_escape') ? options['shell_escape'] : true
 
-      Bundler.with_unbundled_env do
-        dir = command.start_with?('/') ? File.dirname(command).gsub!(/\/bin$/, '') : Dir.pwd
+      Bundler.with_original_env do
+        dir = command.start_with?('/') ? File.dirname(command).gsub!(%r[/bin$], '') : Dir.pwd
         dir = options['working_folder'] if options['working_folder'].present?
         dir = dir.presence || Dir.pwd
         CLI.run(argument_list, stdout: ->(line) { register_output(:stdout, line) }, stderr: ->(line) { register_output(:stderr, line) }, stdin_content: stdin_content, stdin_newlines: stdin_newlines, shell_escape: shell_escape, working_folder: dir)
