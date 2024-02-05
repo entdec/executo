@@ -2,9 +2,10 @@
 
 require 'thor'
 require 'sidekiq/cli'
+require 'executo/version'
 
 class Executo::Cli < Thor
-  package_name "Executo #{Executo::Version}"
+  package_name "Executo #{Executo::VERSION}"
 
   option :config, type: :string, aliases: '-c', desc: 'Path to the configuration file'
 
