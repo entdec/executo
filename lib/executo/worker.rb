@@ -22,7 +22,7 @@ module Executo
       logger_add_tag(command.split('/').last)
 
       send_feedback(state: 'started')
-      logger.debug "  params: #{params}"
+      logger.debug "started with #{params}"
       logger.debug "  options: #{options}"
 
       status = execute(command, params, options)
@@ -34,10 +34,11 @@ module Executo
         pid: status.pid
       )
     rescue StandardError => e
-      logger.error "Exception: #{e.class} - #{e.message}"
+      logger.error "exception: #{e.class} - #{e.message}"
       logger.error e.backtrace.join("\n")
       send_feedback(state: 'failed')
     ensure
+      logger.info "finished after #{(Time.now - @started_at).to_i} seconds"
       send_feedback(state: 'finished')
     end
 
@@ -84,7 +85,6 @@ module Executo
 
     def send_feedback(results)
       results.merge!(runtime_seconds: (Time.now - @started_at).to_i)
-      logger.info "Command #{results[:state]} after #{results[:runtime_seconds]} seconds"
 
       if options.dig('feedback', 'sync')
         send_sync(results)
