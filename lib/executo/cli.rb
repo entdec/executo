@@ -4,7 +4,7 @@ require 'thor'
 require 'sidekiq/cli'
 
 class Executo::Cli < Thor
-  package_name 'Executo'
+  package_name "Executo #{Executo::Version}"
 
   option :config, type: :string, aliases: '-c', desc: 'Path to the configuration file'
 
@@ -16,6 +16,7 @@ class Executo::Cli < Thor
     Executo.config.queues.each do |queue|
       ARGV.push '-q', queue
     end
+    ENV['EXECUTO_CONFIG_FILE'] = options[:config]
 
     cli = Sidekiq::CLI.instance
     cli.parse

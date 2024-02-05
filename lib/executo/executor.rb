@@ -16,7 +16,8 @@ module Executo
 
         Executo.logger.debug "Working folder: #{working_folder}"
         Executo.logger.debug "Computed cmd: #{computed_cmd}"
-
+        Executo.logger.error "Bundler: #{Bundler.inspect}"
+        Executo.logger.error "Bundler: #{Bundler.methods}"
         Bundler.with_unbundled_env do
           Open3.popen3(computed_cmd, chdir: working_folder) do |stdin_stream, stdout_stream, stderr_stream, thread|
             threads = []
