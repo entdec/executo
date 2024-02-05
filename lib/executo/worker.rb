@@ -19,12 +19,11 @@ module Executo
 
       logger_add_tag('Worker')
       logger_add_tag(options.dig('feedback', 'id'))
-      logger_add_tag(command)
-
-      logger.debug "params: #{params}"
-      logger.debug "options: #{options}"
+      logger_add_tag(command.split('/').last)
 
       send_feedback(state: 'started')
+      logger.debug "  params: #{params}"
+      logger.debug "  options: #{options}"
 
       status = execute(command, params, options)
       send_feedback(
