@@ -14,8 +14,8 @@ module Executo
       @options = options
       @output ||= Hash.new([])
       @flushable_output ||= Hash.new([])
-      @started_at = Time.current
-      @flushed_at = Time.current
+      @started_at = Time.now
+      @flushed_at = Time.now
 
       logger_add_tag('Worker')
       logger_add_tag(options.dig('feedback', 'id'))
@@ -50,12 +50,10 @@ module Executo
       stdin_newlines = options.key?('stdin_newlines') ? options['stdin_newlines'] : true
       shell_escape = options.key?('shell_escape') ? options['shell_escape'] : true
 
-      Bundler.with_original_env do
-        dir = command.start_with?('/') ? File.dirname(command).gsub!(%r[/bin$], '') : Dir.pwd
-        dir = options['working_folder'] if options['working_folder'].present?
-        dir = dir.presence || Dir.pwd
-        CLI.run(argument_list, stdout: ->(line) { register_output(:stdout, line) }, stderr: ->(line) { register_output(:stderr, line) }, stdin_content: stdin_content, stdin_newlines: stdin_newlines, shell_escape: shell_escape, working_folder: dir)
-      end
+      dir = command.start_with?('/') ? File.dirname(command).gsub!(%r[/bin$], '') : '/tmp'
+      dir = options['working_folder'] if options['working_folder'].present?
+      dir = dir.presence || Dir.pwd
+      Executor.run(argument_list, stdout: ->(line) { register_output(:stdout, line) }, stderr: ->(line) { register_output(:stderr, line) }, stdin_content: stdin_content, stdin_newlines: stdin_newlines, shell_escape: shell_escape, working_folder: dir)
     end
 
     def register_output(channel, value)
@@ -78,15 +76,15 @@ module Executo
       flushable_output[:stderr].clear
 
       send_feedback(state: 'output', stdout: flush_stdout, stderr: flush_stderr)
-      @flushed_at = Time.current
+      @flushed_at = Time.now
     end
 
     def time_since_flushed
-      (Time.current - @flushed_at).to_i
+      (Time.now - @flushed_at).to_i
     end
 
     def send_feedback(results)
-      results.merge!(runtime_seconds: (Time.current - @started_at).to_i)
+      results.merge!(runtime_seconds: (Time.now - @started_at).to_i)
       logger.info "Command #{results[:state]} after #{results[:runtime_seconds]} seconds"
 
       if options.dig('feedback', 'sync')

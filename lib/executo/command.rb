@@ -7,7 +7,6 @@ module Executo
 
     attr_reader :executo_id, :parameter_values, :status, :stdout, :stderr, :exitstatus, :target, :override_sync
 
-
     def initialize(*args)
       @executo_id = args.first&.delete(:id) || SecureRandom.uuid
       @target = args.first&.delete(:target) || self.class.target

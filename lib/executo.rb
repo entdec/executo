@@ -2,26 +2,20 @@
 
 require 'active_support/message_encryptor'
 require 'active_support/tagged_logging'
+require 'active_support/duration'
+require 'active_support/core_ext/time/conversions'
+require 'active_support/time_with_zone'
+require 'active_support/core_ext/time/zones'
 require 'sidekiq'
 require 'active_job'
 require 'securerandom'
 require 'active_attr'
 require 'pry'
+require 'yaml'
+require 'zeitwerk'
 
-require 'executo/cli'
-require 'executo/tagged_logger'
-require 'executo/configuration'
-require 'executo/version'
-require 'executo/encrypted_worker'
-require 'executo/scheduler_worker'
-require 'executo/worker'
-require 'executo/feedback_process_job'
-require 'executo/feedback_process_service'
-require 'executo/command_dsl'
-require 'executo/command'
-require 'executo/pub_sub'
-
-require 'executo/commands/imapsync_test'
+loader = Zeitwerk::Loader.for_gem
+loader.setup
 
 module Executo
   class Error < StandardError; end
@@ -31,16 +25,17 @@ module Executo
 
   class << self
     attr_reader :config
+    attr_accessor :original_env
 
     delegate :logger, to: :config
 
-    def setup
-      @config = Configuration.new
-      yield config
+    def setup(config_file = nil)
+      @config = Configuration.new(config_file)
+      yield config if block_given?
     end
 
     def cryptor
-      @cryptor ||= ActiveSupport::MessageEncryptor.new(ENV['EXECUTO_KEY'])
+      @cryptor ||= ActiveSupport::MessageEncryptor.new(Executo.config.secret_key)
     end
 
     def encrypt(obj)
@@ -90,7 +85,6 @@ module Executo
       options.dig('feedback', 'id')
     end
 
-
     def schedule(target, list)
       options = {
         'retry' => 0,
@@ -107,6 +101,10 @@ module Executo
 
     def active_job_connection_pool
       @active_job_connection_pool ||= ConnectionPool.new(size: 5, timeout: 5) { Redis.new(config.active_job_redis) }
+    end
+
+    def root
+      File.expand_path('..', __dir__)
     end
   end
 end

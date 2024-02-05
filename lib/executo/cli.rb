@@ -1,65 +1,51 @@
 # frozen_string_literal: true
 
-require 'open3'
-require 'shellwords'
+require 'thor'
+require 'sidekiq/cli'
 
-module Executo
-  class CLI
-    class << self
-      def run(cmd, stdout:, stderr:, stdin_content: [], stdin_newlines: true, shell_escape: true, working_folder: Dir.pwd)
-        raise 'cmd must be an array of Strings.' unless array_of_strings?(cmd)
-        raise 'stdout must be a Proc.' unless stdout.is_a?(Proc)
-        raise 'stderr must be a Proc.' unless stderr.is_a?(Proc)
-        raise 'stdin_content must be an Array of Strings.' unless array_of_strings?(stdin_content)
+class Executo::Cli < Thor
+  package_name 'Executo'
 
-        computed_cmd = escaped_command(cmd, shell_escape: shell_escape)
+  option :config, type: :string, aliases: '-c', desc: 'Path to the configuration file'
 
-        Executo.logger.info "Working folder: #{working_folder}"
-        Executo.logger.info "Computed cmd: #{computed_cmd}"
-        Open3.popen3(computed_cmd, chdir: working_folder) do |stdin_stream, stdout_stream, stderr_stream, thread|
-          threads = []
-          threads << write_stream(stdin_stream, stdin_content, newlines: stdin_newlines)
-          threads << read_stream(stdout_stream, stdout)
-          threads << read_stream(stderr_stream, stderr)
-          threads << thread
+  desc 'daemon', 'Start the executo daemon'
+  def daemon
+    Executo.setup(options[:config])
+    ARGV.clear
+    ARGV.push '-c', Executo.config.concurrency.to_s, '-r', File.join(Executo.root, 'lib', 'executo', 'sidekiq_boot.rb'), '-g', 'executo'
+    Executo.config.queues.each do |queue|
+      ARGV.push '-q', queue
+    end
 
-          threads.each(&:join)
-          thread.value
-        end
+    cli = Sidekiq::CLI.instance
+    cli.parse
+    integrate_with_systemd
+    cli.run
+  end
+
+  private
+
+  def integrate_with_systemd
+    return unless ENV['NOTIFY_SOCKET']
+
+    Sidekiq.configure_server do |config|
+      require 'sidekiq/sd_notify'
+
+      config.on(:startup) do
+        Sidekiq::SdNotify.ready
       end
 
-      def escaped_command(command, shell_escape: true)
-        return command.join unless shell_escape
-
-        command.map{|string| string.gsub('{SPATIE}', ' ')}.shelljoin
+      config.on(:shutdown) do
+        Sidekiq::SdNotify.stopping
       end
 
-      def write_stream(stream, content, newlines: true)
-        Thread.new do
-          content.each do |input_line|
-            stream.write(input_line)
-            stream.write("\n") if input_line[-1] != "\n" && newlines
-          end
-        rescue Errno::EPIPE
-          nil
-        ensure
-          stream.close
-        end
-      end
+      Sidekiq.start_watchdog if Sidekiq::SdNotify.watchdog?
+    end
+  end
 
-      def read_stream(stream, callback)
-        Thread.new do
-          until (line = stream.gets).nil?
-            callback.call(line)
-          end
-        rescue IOError
-          # ignore
-        end
-      end
-
-      def array_of_strings?(array)
-        array.is_a?(Array) && array.all? { |c| c.is_a?(String) }
-      end
+  class << self
+    def exit_on_failure?
+      true
     end
   end
 end

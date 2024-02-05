@@ -32,8 +32,11 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'active_attr', '>= 0.15'
   spec.add_dependency 'activejob', '> 7.0.0', '< 7.1.0'
-  spec.add_dependency 'activemodel', '> 7.0.0', '< 7.1.0'
+  # spec.add_dependency 'activemodel', '> 7.0.0', '< 7.1.0'
   spec.add_dependency 'activesupport', '> 7.0.0', '< 7.2.0'
+
+  spec.add_dependency 'thor'
+  spec.add_dependency 'zeitwerk'
 
   spec.add_dependency 'pry'
   spec.add_dependency 'redis', '< 5'

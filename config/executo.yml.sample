@@ -1,0 +1,9 @@
+---
+log_level: debug
+concurrency: 1
+timeout: 30
+queues:
+  - role1
+  - role2
+redis_url: 'redis://localhost:6379/1'
+active_job_redis_url: 'redis://localhost:6379/0'
