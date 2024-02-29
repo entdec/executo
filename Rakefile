@@ -29,6 +29,7 @@ task :build do
   sh "gem build executo.gemspec"
   load "lib/executo/version.rb"
   sh "gem push --key github --host https://rubygems.pkg.github.com/entdec executo-#{Executo::VERSION}.gem"
+  sh "rm executo-#{Executo::VERSION}.gem"
 end
 
 task release: %i[default executo:semver build]
