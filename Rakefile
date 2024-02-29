@@ -1,19 +1,34 @@
 # frozen_string_literal: true
 
-require 'bundler'
-require 'bundler/gem_tasks'
-require 'rake/testtask'
-
+require "bundler/setup"
+require "executo"
+require "rake/testtask"
+require "rubocop/rake_task"
+require "standard/rake"
 Bundler.setup
 
 Rake::TestTask.new(:test) do |t|
-  t.libs << 'test'
-  t.libs << 'lib'
-  t.test_files = FileList['test/**/*_test.rb']
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList["test/**/*_test.rb"]
 end
 
-task default: :test
+desc "Run rubocop"
+task :rubocop do
+  RuboCop::RakeTask.new
+end
+
+task default: %i[test standard rubocop]
 
 # Adds the Auxilium semver task
-spec = Gem::Specification.find_by_name 'auxilium'
+spec = Gem::Specification.find_by_name "auxilium"
 load "#{spec.gem_dir}/lib/tasks/semver.rake"
+
+desc "Build and push the gem to GitHub"
+task :build do
+  sh "gem build mailbox_toolbox.gemspec"
+  load "lib/mailbox_toolbox/version.rb"
+  sh "gem push --key github --host https://rubygems.pkg.github.com/entdec executo-#{Executo::VERSION}.gem"
+end
+
+task release: %i[mailbox_toolbox:semver build]

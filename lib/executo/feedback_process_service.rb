@@ -8,12 +8,12 @@ module Executo
     attr_writer :arguments
 
     def initialize(feedback, results)
-      @id = feedback['id']
-      @state = results['state']
-      @exitstatus = results['exitstatus']
-      @stdout = results['stdout'] || []
-      @stderr = results['stderr'] || []
-      @arguments = feedback['arguments'] || {}
+      @id = feedback["id"]
+      @state = results["state"]
+      @exitstatus = results["exitstatus"]
+      @stdout = results["stdout"] || []
+      @stderr = results["stderr"] || []
+      @arguments = feedback["arguments"] || {}
     end
 
     def call
@@ -24,12 +24,13 @@ module Executo
 
     private
 
-    def perform; end
+    def perform
+    end
 
     class << self
       def arguments(*names)
         names.each do |name|
-          define_method(name) { instance_variable_get('@arguments')[name.to_s] }
+          define_method(name) { instance_variable_get(:@arguments)[name.to_s] }
         end
       end
 

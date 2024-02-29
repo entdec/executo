@@ -24,7 +24,7 @@ module Executo
 
       def parameters(value = nil)
         @parameters = value if value.present?
-        @parameters || ''
+        @parameters || ""
       end
 
       def feedback_interval(value = nil)

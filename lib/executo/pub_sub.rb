@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'json'
+
+require "json"
 
 module Executo
   class PubSub
@@ -14,7 +15,7 @@ module Executo
       @client = Redis.new(Executo.config.redis)
       @client.subscribe_with_timeout(timeout, channel_name) do |on|
         on.message do |_channel, message|
-          block.call(JSON.parse(message))
+          yield(JSON.parse(message))
         end
       end
     ensure

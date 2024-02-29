@@ -1,27 +1,30 @@
 # frozen_string_literal: true
 
-require 'active_support/message_encryptor'
-require 'active_support/tagged_logging'
-require 'active_support/duration'
-require 'active_support/core_ext/time/conversions'
-require 'active_support/time_with_zone'
-require 'active_support/core_ext/time/zones'
-require 'bundler'
-require 'sidekiq'
-require 'active_job'
-require 'securerandom'
-require 'active_attr'
-require 'pry'
-require 'yaml'
-require 'zeitwerk'
+require "active_support/message_encryptor"
+require "active_support/tagged_logging"
+require "active_support/duration"
+require "active_support/core_ext/time/conversions"
+require "active_support/time_with_zone"
+require "active_support/core_ext/time/zones"
+require "bundler"
+require "sidekiq"
+require "active_job"
+require "securerandom"
+require "active_attr"
+require "pry"
+require "yaml"
+require "zeitwerk"
 
 loader = Zeitwerk::Loader.for_gem
 loader.setup
 
 module Executo
   class Error < StandardError; end
+
   class MissingTargetError < Error; end
+
   class MultipleTargetsError < Error; end
+
   class CommandError < Error; end
 
   class << self
@@ -63,35 +66,35 @@ module Executo
     #        retry - whether to retry this job if it fails, default true or an integer number of retries
     #        backtrace - whether to save any error backtrace, default false
     def publish(target:, command:, parameters: [], encrypt: false, options: {}, job_options: {}, feedback: {})
-      options['feedback'] = feedback&.stringify_keys
-      options['feedback']['id'] ||= SecureRandom.uuid
+      options["feedback"] = feedback&.stringify_keys
+      options["feedback"]["id"] ||= SecureRandom.uuid
 
       args = [command, parameters, options.deep_stringify_keys]
       args = args.map { |a| encrypt(a) } if encrypt
 
-      sidekiq_options = { 'retry' => 0 }.merge(job_options).merge(
-        'queue' => target,
-        'class' => encrypt ? 'Executo::EncryptedWorker' : 'Executo::Worker',
-        'args' => args
+      sidekiq_options = {"retry" => 0}.merge(job_options).merge(
+        "queue" => target,
+        "class" => encrypt ? "Executo::EncryptedWorker" : "Executo::Worker",
+        "args" => args
       )
 
       if defined?(Rails) && Rails.env.test?
-        $executo_jobs ||= {}
-        $executo_jobs[options.dig('feedback', 'id')] = sidekiq_options
+        $executo_jobs ||= {} # rubocop:disable Style/GlobalVars
+        $executo_jobs[options.dig("feedback", "id")] = sidekiq_options # rubocop:disable Style/GlobalVars
       else
         Sidekiq::Client.new(connection_pool).push(sidekiq_options)
       end
 
-      logger.debug("Published #{command} to #{target} with id #{options['feedback']['id']}")
-      options.dig('feedback', 'id')
+      logger.debug("Published #{command} to #{target} with id #{options["feedback"]["id"]}")
+      options.dig("feedback", "id")
     end
 
     def schedule(target, list)
       options = {
-        'retry' => 0,
-        'queue' => target,
-        'class' => 'Executo::SetScheduleWorker',
-        'args' => list
+        "retry" => 0,
+        "queue" => target,
+        "class" => "Executo::SetScheduleWorker",
+        "args" => list
       }
       Sidekiq::Client.new(connection_pool).push(options)
     end
@@ -105,7 +108,7 @@ module Executo
     end
 
     def root
-      File.expand_path('..', __dir__)
+      File.expand_path("..", __dir__)
     end
   end
 end

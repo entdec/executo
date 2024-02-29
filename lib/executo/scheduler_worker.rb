@@ -5,7 +5,7 @@
 module Executo
   class SchedulerWorker
     include Sidekiq::Worker
-    sidekiq_options queue: 'critical'
+    sidekiq_options queue: "critical"
 
     def perform
       execution_time = Time.now.utc
@@ -26,7 +26,7 @@ module Executo
 
     def scheduled_workers
       @scheduled_workers ||= Sidekiq::ScheduledSet.new.entries.each_with_object({}) do |item, hash|
-        hash[item['class']] = true
+        hash[item["class"]] = true
       end
     end
   end

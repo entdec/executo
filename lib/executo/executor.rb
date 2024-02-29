@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'open3'
-require 'shellwords'
+require "open3"
+require "shellwords"
 
 module Executo
   class Executor
     class << self
       def run(cmd, stdout:, stderr:, stdin_content: [], stdin_newlines: true, shell_escape: true, working_folder: Dir.pwd)
-        raise 'cmd must be an array of Strings.' unless array_of_strings?(cmd)
-        raise 'stdout must be a Proc.' unless stdout.is_a?(Proc)
-        raise 'stderr must be a Proc.' unless stderr.is_a?(Proc)
-        raise 'stdin_content must be an Array of Strings.' unless array_of_strings?(stdin_content)
+        raise "cmd must be an array of Strings." unless array_of_strings?(cmd)
+        raise "stdout must be a Proc." unless stdout.is_a?(Proc)
+        raise "stderr must be a Proc." unless stderr.is_a?(Proc)
+        raise "stdin_content must be an Array of Strings." unless array_of_strings?(stdin_content)
 
         computed_cmd = escaped_command(cmd, shell_escape: shell_escape)
 
@@ -34,7 +34,7 @@ module Executo
       def escaped_command(command, shell_escape: true)
         return command.join unless shell_escape
 
-        command.map { |string| string.gsub('{SPATIE}', ' ') }.shelljoin
+        command.map { |string| string.gsub("{SPATIE}", " ") }.shelljoin
       end
 
       def write_stream(stream, content, newlines: true)
@@ -61,7 +61,7 @@ module Executo
       end
 
       def array_of_strings?(array)
-        array.is_a?(Array) && array.all? { |c| c.is_a?(String) }
+        array.is_a?(Array) && array.all?(String)
       end
     end
   end

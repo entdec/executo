@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'bundler/setup'
-require 'bundler'
+require "bundler/setup"
+require "bundler"
 Bundler.require
-require 'executo'
-require File.join(Dir.pwd, 'boot.rb')
+require "executo"
+require File.join(Dir.pwd, "boot.rb")
 
 Executo.setup do |config|
-  config.redis = { url: 'redis://localhost:6379/1' }
-  config.active_job_redis = { url: 'redis://localhost:6379/0' }
+  config.redis = {url: "redis://localhost:6379/1"}
+  config.active_job_redis = {url: "redis://localhost:6379/0"}
 end
 
 Pry.start

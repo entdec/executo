@@ -19,10 +19,10 @@ module Executo
     def call
       raise MissingTargetError unless target_name.present?
 
-      Executo.publish(target: target_name, command: command, parameters: safe_parameters, feedback: { service: self.class.name, id: executo_id, arguments: attributes.to_h, sync: sync })
+      Executo.publish(target: target_name, command: command, parameters: safe_parameters, feedback: {service: self.class.name, id: executo_id, arguments: attributes.to_h, sync: sync})
       return perform_sync if sync || override_sync
 
-      { target: target_name, id: executo_id }
+      {target: target_name, id: executo_id}
     end
 
     def process_results(results)
@@ -47,11 +47,11 @@ module Executo
         results = message.symbolize_keys
         value = process_results(results)
         case results[:state]
-        when 'completed'
+        when "completed"
           return_value = value
-        when 'failed'
+        when "failed"
           raise CommandError, value
-        when 'finished'
+        when "finished"
           client.unsubscribe
         end
       end
@@ -73,7 +73,7 @@ module Executo
 
     class << self
       def process_feedback(feedback, results)
-        cmd = new(feedback['arguments'].merge(id: feedback['id']))
+        cmd = new(feedback["arguments"].merge(id: feedback["id"]))
         cmd.setup_logger
         cmd.process_results(results.symbolize_keys)
       end

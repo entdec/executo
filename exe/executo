@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'bundler/setup'
-require 'executo'
+require "bundler/setup"
+require "executo"
 
 Executo::Cli.start(ARGV)

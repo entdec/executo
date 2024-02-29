@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
-require 'executo'
-require 'active_support/core_ext/hash'
-require 'pry'
+require "bundler/setup"
+require "executo"
+require "active_support/core_ext/hash"
+require "pry"
 
-require 'sidekiq'
-require 'active_job'
+require "sidekiq"
+require "active_job"
 
 ActiveJob::Base.queue_adapter = :sidekiq
 
 Executo.setup do |config|
-  config.redis = { url: 'redis://localhost:6379/1' }
-  config.active_job_redis = { url: 'redis://localhost:6379/0' }
+  config.redis = {url: "redis://localhost:6379/1"}
+  config.active_job_redis = {url: "redis://localhost:6379/0"}
 end
 
-Executo.publish('localhost', 'ls', ['-al'], feedback: { service: 'LsProcessService', args: { now: Time.now } })
+Executo.publish("localhost", "ls", ["-al"], feedback: {service: "LsProcessService", args: {now: Time.now}})
 
-puts 'Done'
+puts "Done"

@@ -3,7 +3,7 @@
 module Executo
   class Configuration
     attr_accessor :redis, :active_job_redis, :secret_key, :concurrency, :queues
-    attr_writer   :logger
+    attr_writer :logger
 
     def initialize(config_file = nil)
       @redis = {}
@@ -11,7 +11,7 @@ module Executo
       @logger = ActiveSupport::TaggedLogging.new(Logger.new($stdout))
       @logger.level = Logger::INFO
       @concurrency = 2
-      @queues = ['default']
+      @queues = ["default"]
 
       read_config_file(config_file) if config_file
     end
@@ -38,7 +38,7 @@ module Executo
     def read_config_file(file_name)
       data = YAML.load_file(file_name)
       data.each do |key, value|
-        send("#{key}=", value) if respond_to?("#{key}=")
+        send(:"#{key}=", value) if respond_to?(:"#{key}=")
       end
     end
   end

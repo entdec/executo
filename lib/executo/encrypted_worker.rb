@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'executo/worker'
+require "executo/worker"
 
 module Executo
   class EncryptedWorker < Worker
