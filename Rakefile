@@ -26,9 +26,9 @@ load "#{spec.gem_dir}/lib/tasks/semver.rake"
 
 desc "Build and push the gem to GitHub"
 task :build do
-  sh "gem build mailbox_toolbox.gemspec"
-  load "lib/mailbox_toolbox/version.rb"
+  sh "gem build executo.gemspec"
+  load "lib/executo/version.rb"
   sh "gem push --key github --host https://rubygems.pkg.github.com/entdec executo-#{Executo::VERSION}.gem"
 end
 
-task release: %i[mailbox_toolbox:semver build]
+task release: %i[default executo:semver build]

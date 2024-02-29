@@ -5,10 +5,6 @@ class Executo::SidekiqBoot
     Sidekiq.configure_server do |config|
       config.redis = Executo.config.redis
     end
-
-    Sidekiq.configure_server do |config|
-      config.redis = Executo.config.redis
-    end
   end
 end
 
