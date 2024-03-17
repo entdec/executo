@@ -3,7 +3,7 @@
 # Call with:
 # LsTest.call(parameter_values: { folder: '/tmp' })
 
-class LsTest < Executo::Command
+class Executo::Commands::LsTest < Executo::Command
   target "localhost"
   command "/bin/ls"
   parameters "-lisart %<folder>s"
