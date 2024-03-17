@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
-require "active_support/message_encryptor"
-require "active_support/tagged_logging"
-require "active_support/duration"
-require "active_support/core_ext/time/conversions"
-require "active_support/time_with_zone"
-require "active_support/core_ext/time/zones"
+require "active_support/all"
 require "bundler"
 require "sidekiq"
 require "active_job"
