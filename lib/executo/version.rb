@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Executo
-  VERSION = "0.4.8"
+  VERSION = "0.4.9"
   module Version
     def self.to_s
       Executo::VERSION
