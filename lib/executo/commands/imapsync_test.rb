@@ -3,7 +3,7 @@
 # Call with:
 # ImapSyncTest.call(mailbox_id: 'abc', parameter_values: {host1: 1, user1: 1, password1: 1, host2: 2, user2: 2, password2: 2})
 
-class ImapSyncTest < Executo::Command
+class Executo::Commands::ImapSyncTest < Executo::Command
   target "localhost"
   command "/usr/local/bin/imapsync"
   parameters "--dry --host1 %<host1>s --user1 %<user1>s --password1 %<password1>s --host2 %<host2>s --user2 %<user2>s --password2 %<password2>s --logfile %<logfile>s --delete2"
