@@ -77,7 +77,7 @@ module Executo
         $executo_jobs ||= {} # rubocop:disable Style/GlobalVars
         $executo_jobs[options.dig("feedback", "id")] = sidekiq_options # rubocop:disable Style/GlobalVars
       else
-        Sidekiq::Client.new(connection_pool).push(sidekiq_options)
+        Sidekiq::Client.new(pool: connection_pool).push(sidekiq_options)
       end
 
       logger.debug("Published #{command} to #{target} with id #{options["feedback"]["id"]}")
@@ -91,7 +91,7 @@ module Executo
         "class" => "Executo::SetScheduleWorker",
         "args" => list
       }
-      Sidekiq::Client.new(connection_pool).push(options)
+      Sidekiq::Client.new(pool: connection_pool).push(options)
     end
 
     def connection_pool
