@@ -98,10 +98,6 @@ module Executo
       @connection_pool ||= ConnectionPool.new(size: 5, timeout: 5) { Redis.new(config.redis) }
     end
 
-    def active_job_connection_pool
-      @active_job_connection_pool ||= ConnectionPool.new(size: 5, timeout: 5) { Redis.new(config.active_job_redis) }
-    end
-
     def root
       File.expand_path("..", __dir__)
     end

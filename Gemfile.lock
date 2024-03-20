@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    executo (0.4.12)
+    executo (0.4.13)
       active_attr (>= 0.15)
       activejob (> 7.0.0, < 7.2.0)
       activesupport (> 7.0.0, < 7.2.0)
       pry
       redis
-      sidekiq (> 5.1, < 8.0)
+      sidekiq (~> 7.2.0)
       thor
       zeitwerk
 

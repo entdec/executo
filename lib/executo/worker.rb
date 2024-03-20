@@ -98,8 +98,8 @@ module Executo
     end
 
     def send_async(results)
-      Sidekiq::Client.new(pool: Executo.active_job_connection_pool).push(
-        "class" => ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper,
+      Sidekiq::Client.new(config: Sidekiq::Config.new(Executo.config.active_job_redis)).push(
+        "class" => "ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper",
         "queue" => "default",
         "wrapped" => "Executo::FeedbackProcessJob",
         "args" => [

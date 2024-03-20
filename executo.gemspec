@@ -41,7 +41,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "pry"
   spec.add_dependency "redis"
-  spec.add_dependency "sidekiq", "> 5.1", "< 8.0"
+  spec.add_dependency "sidekiq", "~> 7.2.0"
 
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_development_dependency "pry", "~> 0.14"
