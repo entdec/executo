@@ -12,15 +12,16 @@ class Executo::Cli < Thor
 
   desc "daemon", "Start the executo daemon"
   def daemon
-    setup_environment
+    cli = setup_environment
     integrate_with_systemd
     cli.run
   end
 
   desc "console", "Start the executo console"
   def console
-    setup_environment
+    cli = setup_environment
     Pry.start
+    cli
   end
 
   desc "version", "Show the executo version"
@@ -41,6 +42,7 @@ class Executo::Cli < Thor
 
     cli = Sidekiq::CLI.instance
     cli.parse
+    cli
   end
 
   def integrate_with_systemd
