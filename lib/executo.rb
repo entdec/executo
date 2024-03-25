@@ -3,6 +3,7 @@
 require "active_support/all"
 require "bundler"
 require "sidekiq"
+require "redis"
 require "active_job"
 require "securerandom"
 require "active_attr"

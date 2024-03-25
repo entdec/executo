@@ -98,7 +98,7 @@ module Executo
     end
 
     def send_async(results)
-      Sidekiq::Client.new(config: Sidekiq::Config.new(Executo.config.active_job_redis)).push(
+      sidekiq_client.push(
         "class" => "ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper",
         "queue" => "default",
         "wrapped" => "Executo::FeedbackProcessJob",
@@ -112,6 +112,10 @@ module Executo
           }
         ]
       )
+    end
+
+    def sidekiq_client
+      @sidekiq_client ||= Sidekiq::Client.new(config: Sidekiq::Config.new(Executo.config.active_job_redis))
     end
   end
 end

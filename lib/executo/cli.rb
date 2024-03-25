@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "pry"
 require "thor"
 require "sidekiq/cli"
 require "executo/version"
@@ -11,6 +12,25 @@ class Executo::Cli < Thor
 
   desc "daemon", "Start the executo daemon"
   def daemon
+    setup_environment
+    integrate_with_systemd
+    cli.run
+  end
+
+  desc "console", "Start the executo console"
+  def console
+    setup_environment
+    Pry.start
+  end
+
+  desc "version", "Show the executo version"
+  def version
+    puts Executo::VERSION
+  end
+
+  private
+
+  def setup_environment
     Executo.setup(options[:config])
     ARGV.clear
     ARGV.push "-c", Executo.config.concurrency.to_s, "-r", File.join(Executo.root, "lib", "executo", "sidekiq_boot.rb"), "-g", "executo"
@@ -21,11 +41,7 @@ class Executo::Cli < Thor
 
     cli = Sidekiq::CLI.instance
     cli.parse
-    integrate_with_systemd
-    cli.run
   end
-
-  private
 
   def integrate_with_systemd
     return unless ENV["NOTIFY_SOCKET"]
