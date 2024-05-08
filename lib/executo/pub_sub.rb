@@ -4,7 +4,7 @@ require "json"
 
 module Executo
   class PubSub
-    attr_reader :channel_name, :timeout
+    attr_reader :channel_name, :timeout, :last_message_at
 
     def initialize(channel_name, timeout: 5)
       @channel_name = channel_name
@@ -12,9 +12,11 @@ module Executo
     end
 
     def subscribe(&block)
+      @last_message_at = nil
       @client = Redis.new(Executo.config.redis)
       @client.subscribe_with_timeout(timeout, channel_name) do |on|
         on.message do |_channel, message|
+          @last_message_at = Time.current
           yield(JSON.parse(message))
         end
       end

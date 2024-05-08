@@ -55,6 +55,7 @@ module Executo
           client.unsubscribe
         end
       end
+      results[:status] = :timeout if client.last_message_at.nil?
 
       results.merge(target: target_name, id: executo_id, return_value: return_value)
     end

@@ -31,12 +31,13 @@ module Executo
         exitstatus: status.exitstatus.to_i,
         stdout: output[:stdout],
         stderr: output[:stderr],
-        pid: status.pid
+        pid: status.pid,
+        hostname: `hostname`.chomp
       )
     rescue => e
       logger.error "exception: #{e.class} - #{e.message}"
       logger.error e.backtrace.join("\n")
-      send_feedback(state: "failed")
+      send_feedback(state: "failed", stderr: [e.message] + e.backtrace[0..3], hostname: `hostname`.chomp)
     ensure
       logger.info "finished after #{(Time.now - @started_at).to_i} seconds"
       send_feedback(state: "finished")
@@ -98,6 +99,7 @@ module Executo
     end
 
     def send_async(results)
+      logger.info "sending response to ActiveJob"
       sidekiq_client.push(
         "class" => "ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper",
         "queue" => "default",
@@ -115,7 +117,11 @@ module Executo
     end
 
     def sidekiq_client
-      @sidekiq_client ||= Sidekiq::Client.new(config: Sidekiq::Config.new(Executo.config.active_job_redis))
+      @sidekiq_client ||= Sidekiq::Client.new(pool: connection_pool_active_job_redis)
+    end
+
+    def connection_pool_active_job_redis
+      @connection_pool ||= ConnectionPool.new(size: 5, timeout: 5) { Redis.new(Executo.config.active_job_redis) }
     end
   end
 end
