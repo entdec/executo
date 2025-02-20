@@ -33,8 +33,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "active_attr", ">= 0.15"
-  spec.add_dependency "activejob", "> 7.0.0", "< 7.2.0"
-  spec.add_dependency "activesupport", "> 7.0.0", "< 7.2.0"
+  spec.add_dependency "activejob", "> 7.0.0", "< 8.1.0"
+  spec.add_dependency "activesupport", "> 7.0.0", "< 8.1.0"
 
   spec.add_dependency "thor"
   spec.add_dependency "zeitwerk"

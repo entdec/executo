@@ -9,3 +9,4 @@
 /config/executo.yml
 /.idea/
 *.gem
+/vendor/
