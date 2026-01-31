@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    executo (0.4.19)
+    executo (0.5.0)
       active_attr (>= 0.15)
-      activejob (> 7.0.0, < 7.2.0)
-      activesupport (> 7.0.0, < 7.2.0)
+      activejob (> 7.0.0, < 9.0)
+      activesupport (> 7.0.0, < 9.0)
       pry
       redis
-      sidekiq (~> 7.2.0)
+      sidekiq (>= 7.2, < 8.0)
       thor
       zeitwerk
 
@@ -83,6 +83,8 @@ GEM
     method_source (1.0.0)
     minitest (5.22.3)
     mutex_m (0.2.0)
+    nokogiri (1.18.9-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.18.9-x86_64-linux-gnu)
       racc (~> 1.4)
     parallel (1.24.0)
@@ -190,6 +192,7 @@ GEM
     zeitwerk (2.6.13)
 
 PLATFORMS
+  arm64-darwin-23
   x86_64-linux
 
 DEPENDENCIES
